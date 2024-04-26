@@ -1,6 +1,6 @@
 defmodule Boleto do
   @moduledoc """
-  Documentation for `Boleto`.
+  Documentation for Boleto.
   """
 
   @doc """
@@ -8,8 +8,10 @@ defmodule Boleto do
 
   ## Examples
 
-      iex> Boleto.hello()
-      :world
+      iex> Boleto.codigo_moeda("real")
+      9
+      iex> Boleto.dv("001905009")
+      5
 
   """
   def codigo_banco do
@@ -17,15 +19,34 @@ defmodule Boleto do
   end
 
   def codigo_moeda(type) do
-    moedas = {
-      :real => 9
-      :other => 0
+    moedas = %{
+      "real" => 9,
+      "outro" => 0
     }
 
     moedas[type]
   end
 
-  def dv do
+  def dv(campo) do
+    #tratar string
+    fatores = Stream.cycle([2, 1])
+    fatores = Enum.take(fatores, 9)
+    IO.puts("Fatores #{fatores}")
+    IO.inspect(fatores)
+    campo = String.to_atom(campo)
+
+    IO.puts("#{campo}")
+    # String.codepoints(campo)
+    #   |> Enum.each(fn codepoint ->
+    #     # IO.puts("#{String.to_integer(codepoint)}")
+    #     # item  = String.to_integer(codepoint) * fator
+
+    #     # fator = if fator == 2, do:  1, else: 2
+    #     # IO.puts(fator)
+    #     # IO.puts("Codepoint: #{item}")
+    # end)
+
+
   end
 
   def fator_venc do
@@ -60,7 +81,7 @@ defmodule Boleto do
 
   end
 
-  def linha(digitavel) do
-    Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
-  end
+  # def linha(digitavel) do
+  #   Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
+  # end
 end
