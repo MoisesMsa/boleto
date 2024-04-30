@@ -6,12 +6,6 @@ defmodule Boleto do
   @doc """
   Hello world.
 
-  ## Examples
-
-      iex> Boleto.codigo_moeda("real")
-      9
-      iex> Boleto.dv("001905009")
-      5
 
   """
   def codigo_banco do
@@ -63,10 +57,10 @@ defmodule Boleto do
 
     #necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
     if fator >= 10000 do
-      IO.puts(fator - 9000)
-    else
-      IO.puts (fator)
+      fator = fator - 9000
     end
+
+    fator
   end
 
   ### rapahel
