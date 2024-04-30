@@ -1,6 +1,6 @@
 defmodule Boleto do
   @moduledoc """
-  Documentation for `Boleto`.
+  Documentation for Boleto.
   """
 
   @doc """
@@ -8,8 +8,10 @@ defmodule Boleto do
 
   ## Examples
 
-      iex> Boleto.hello()
-      :world
+      iex> Boleto.codigo_moeda("real")
+      9
+      iex> Boleto.dv("001905009")
+      5
 
   """
   def codigo_banco do
@@ -18,14 +20,33 @@ defmodule Boleto do
 
   def codigo_moeda(type) do
     moedas = %{
-      :real => 9,
-      :other => 0
+      "real" => 9,
+      "outro" => 0
     }
 
     moedas[type]
   end
 
-  def dv do
+  def dv(campo) do
+    #tratar string
+    fatores = Stream.cycle([2, 1])
+    fatores = Enum.take(fatores, 9)
+    IO.puts("Fatores #{fatores}")
+    IO.inspect(fatores)
+    campo = String.to_atom(campo)
+
+    IO.puts("#{campo}")
+    # String.codepoints(campo)
+    #   |> Enum.each(fn codepoint ->
+    #     # IO.puts("#{String.to_integer(codepoint)}")
+    #     # item  = String.to_integer(codepoint) * fator
+
+    #     # fator = if fator == 2, do:  1, else: 2
+    #     # IO.puts(fator)
+    #     # IO.puts("Codepoint: #{item}")
+    # end)
+
+
   end
 
   def fator_venc(fator) do
