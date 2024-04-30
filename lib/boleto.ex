@@ -26,7 +26,7 @@ defmodule Boleto do
 
     moedas[type]
   end
-
+  ## moises
   def dv(campo) do
     #tratar string
     fatores = Stream.cycle([2, 1])
@@ -69,14 +69,17 @@ defmodule Boleto do
     end
   end
 
+  ### rapahel
   def valor do
   end
 
+  ## moises
   def nosso_numero do
    # caso 1 sem o dv opcao 1
    # caso 2 nosso numero livre do cliente
   end
 
+  ### raphael
   def num_convenio do
     # caso 1 CCCCC
     # caso 2 CCCCCc
@@ -84,15 +87,19 @@ defmodule Boleto do
     # caso 4 livre do cliente
   end
 
+  ### moises
   def complemento_do_num do
   end
 
+  ### raphael
   def num_agencia do
   end
 
+  ### moises
   def conta_corrente do
   end
 
+  ### moises
   # ou modalidade de cobrança
   def tipo_carteria do
 
