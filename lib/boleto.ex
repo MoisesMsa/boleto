@@ -17,8 +17,8 @@ defmodule Boleto do
   end
 
   def codigo_moeda(type) do
-    moedas = {
-      :real => 9
+    moedas = %{
+      :real => 9,
       :other => 0
     }
 
@@ -28,7 +28,24 @@ defmodule Boleto do
   def dv do
   end
 
-  def fator_venc do
+  def fator_venc(fator) do
+    {:ok, data_base} = Date.new(1997, 10, 7)
+    Date.add(data_base, fator)
+  end
+
+  def fator_venc(dia, mes, ano) do
+    {:ok, dataBase} = Date.new(1997, 10, 7)
+
+    {:ok, dataNova} = Date.new(ano, mes, dia)
+
+    fator = Date.diff(dataNova, dataBase)
+
+    #necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
+    if fator >= 10000 do
+      IO.puts(fator - 9000)
+    else
+      IO.puts (fator)
+    end
   end
 
   def valor do
@@ -60,7 +77,7 @@ defmodule Boleto do
 
   end
 
-  def linha(digitavel) do
-    Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
-  end
+  # def linha(digitavel) do
+  #   Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
+  # end
 end
