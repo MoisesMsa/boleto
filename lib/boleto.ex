@@ -49,7 +49,24 @@ defmodule Boleto do
 
   end
 
-  def fator_venc do
+  def fator_venc(fator) do
+    {:ok, data_base} = Date.new(1997, 10, 7)
+    Date.add(data_base, fator)
+  end
+
+  def fator_venc(dia, mes, ano) do
+    {:ok, dataBase} = Date.new(1997, 10, 7)
+
+    {:ok, dataNova} = Date.new(ano, mes, dia)
+
+    fator = Date.diff(dataNova, dataBase)
+
+    #necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
+    if fator >= 10000 do
+      IO.puts(fator - 9000)
+    else
+      IO.puts (fator)
+    end
   end
 
   def valor do
