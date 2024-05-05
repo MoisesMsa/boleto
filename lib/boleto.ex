@@ -12,6 +12,13 @@ defmodule Boleto do
     001
   end
 
+  # def string_para_lista_numerica(string) do
+  #   # IO.inspect({string, :erlang.element(1, :erlang.type(string))})
+  #   string
+  #   |> String.graphemes()
+  #   |> Enum.map(&String.to_integer/1)
+  # end
+
   def codigo_moeda(type) do
     moedas = %{
       "real" => 9,
@@ -20,27 +27,46 @@ defmodule Boleto do
 
     moedas[type]
   end
+
   ## moises
-  def dv(campo) do
-    #tratar string
-    fatores = Stream.cycle([2, 1])
-    fatores = Enum.take(fatores, 9)
-    IO.puts("Fatores #{fatores}")
-    IO.inspect(fatores)
-    campo = String.to_atom(campo)
+  def dv_line(campo) do
+    total_digitos = String.length(campo)
 
-    IO.puts("#{campo}")
-    # String.codepoints(campo)
-    #   |> Enum.each(fn codepoint ->
-    #     # IO.puts("#{String.to_integer(codepoint)}")
-    #     # item  = String.to_integer(codepoint) * fator
+    cycle = if total_digitos == 10 do
+              [1, 2]
+            else
+              [2, 1]
+            end
 
-    #     # fator = if fator == 2, do:  1, else: 2
-    #     # IO.puts(fator)
-    #     # IO.puts("Codepoint: #{item}")
-    # end)
+    # IO.inspect(cycle)
 
+    fatores = Stream.cycle(cycle)
+    fatores = Enum.take(fatores, total_digitos)
 
+    # tratar string
+    soma_campo =
+      String.split(campo, "", trim: true)
+      |> Enum.map(&String.to_integer/1)
+      |> Enum.zip(fatores)
+      ## refatorar
+      |> Enum.map(fn {x, y} ->
+        value = x * y
+
+        if value > 9 do
+          value = value - 10 + 1
+        else
+          value
+        end
+      end)
+      |> Enum.sum()
+
+    resto = rem(soma_campo, 10)
+    proxima_dezena = (soma_campo + 10) - resto
+
+    dv = rem(proxima_dezena - resto, 10)
+  end
+
+  def dv_barcode(campo) do
   end
 
   def fator_venc(fator) do
@@ -55,7 +81,7 @@ defmodule Boleto do
 
     fator = Date.diff(dataNova, dataBase)
 
-    #necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
+    # necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
     if fator >= 10000 do
       fator = fator - 9000
     end
@@ -69,8 +95,8 @@ defmodule Boleto do
 
   ## moises
   def nosso_numero do
-   # caso 1 sem o dv opcao 1
-   # caso 2 nosso numero livre do cliente
+    # caso 1 sem o dv opcao 1
+    # caso 2 nosso numero livre do cliente
   end
 
   ### raphael
@@ -96,7 +122,6 @@ defmodule Boleto do
   ### moises
   # ou modalidade de cobrança
   def tipo_carteria do
-
   end
 
   # def linha(digitavel) do
