@@ -77,7 +77,15 @@ defmodule Boleto do
 
   def fator_venc(fator) do
     {:ok, data_base} = Date.new(1997, 10, 7)
-    Date.add(data_base, fator)
+    data_nova = Date.add(data_base, fator)
+
+    IO.inspect(Date.to_iso8601(data_nova))
+
+    #{year, month, day} = {data_nova.year, data_nova.month, data_nova.day}
+
+
+    #ao receber o fator de vencimento essa funcao adiciona ele a data base para retornar o dia, mes e ano da data de vencimento
+
   end
 
   def fator_venc(dia, mes, ano) do
@@ -87,16 +95,40 @@ defmodule Boleto do
 
     fator = Date.diff(dataNova, dataBase)
 
-    # necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
+    #ao receber o dia, mes e ano de vencimento a funcao subtrae a data da data base para retornar o fator de vencimento
+    #necessidade pois o fator de vencimento ao chegar a 10 mil retorna a mil.
     if fator >= 10000 do
-      fator = fator - 9000
+      fator - 9000
+    else
+      fator
     end
 
     fator
   end
 
   ### rapahel
-  def valor do
+
+  def valor_codificador(preco) do
+
+    #arredonda o valor multiplicando por 100
+    valorArredondado = round(preco * 100)
+
+    valorFormatado = Integer.to_string(valorArredondado)
+
+    #transforma o valor em string para usar a funcao pad_leading para preencher o valor com zeros
+    valorFinal = String.pad_leading(valorFormatado, 10, "0")
+
+    IO.inspect(valorFinal)
+
+  end
+
+  def valor_decodificador(valor) do
+
+    preco = String.to_integer(valor)
+
+    IO.inspect(Float.to_string(preco/100))
+
+    #se o valor tiver dez digitos e for do tipo binary ele transforma em uma string e divide por 100 para adicionar os centavos ao valor do codigo de barras
   end
 
   ## moises
@@ -129,7 +161,6 @@ defmodule Boleto do
           "X"
       end
   end
-
 
   ### moises
   def complemento_do_num do
