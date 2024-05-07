@@ -6,17 +6,23 @@ defmodule Boleto do
   @doc """
   Hello world.
 
-  ## Examples
-
-      iex> Boleto.codigo_moeda("real")
-      9
-      iex> Boleto.dv("001905009")
-      5
 
   """
+  def main do
+    IO.puts(">>>>>>>>> teste")
+    #  |>
+  end
+
   def codigo_banco do
     001
   end
+
+  # def string_para_lista_numerica(string) do
+  #   # IO.inspect({string, :erlang.element(1, :erlang.type(string))})
+  #   string
+  #   |> String.graphemes()
+  #   |> Enum.map(&String.to_integer/1)
+  # end
 
   def codigo_moeda(type) do
     moedas = %{
@@ -26,27 +32,47 @@ defmodule Boleto do
 
     moedas[type]
   end
+
   ## moises
-  def dv(campo) do
-    #tratar string
-    fatores = Stream.cycle([2, 1])
-    fatores = Enum.take(fatores, 9)
-    IO.puts("Fatores #{fatores}")
-    IO.inspect(fatores)
-    campo = String.to_atom(campo)
+  def dv_line(campo) do
+    total_digitos = String.length(campo)
 
-    IO.puts("#{campo}")
-    # String.codepoints(campo)
-    #   |> Enum.each(fn codepoint ->
-    #     # IO.puts("#{String.to_integer(codepoint)}")
-    #     # item  = String.to_integer(codepoint) * fator
+    cycle =
+      if total_digitos == 10 do
+        [1, 2]
+      else
+        [2, 1]
+      end
 
-    #     # fator = if fator == 2, do:  1, else: 2
-    #     # IO.puts(fator)
-    #     # IO.puts("Codepoint: #{item}")
-    # end)
+    # IO.inspect(cycle)
 
+    fatores = Stream.cycle(cycle)
+    fatores = Enum.take(fatores, total_digitos)
 
+    # tratar string
+    soma_campo =
+      String.split(campo, "", trim: true)
+      |> Enum.map(&String.to_integer/1)
+      |> Enum.zip(fatores)
+      ## refatorar
+      |> Enum.map(fn {x, y} ->
+        value = x * y
+
+        if value > 9 do
+          value = value - 10 + 1
+        else
+          value
+        end
+      end)
+      |> Enum.sum()
+
+    resto = rem(soma_campo, 10)
+    proxima_dezena = soma_campo + 10 - resto
+
+    dv = rem(proxima_dezena - resto, 10)
+  end
+
+  def dv_barcode(campo) do
   end
 
   def fator_venc(fator) do
@@ -76,6 +102,8 @@ defmodule Boleto do
     else
       fator
     end
+
+    fator
   end
 
   ### rapahel
@@ -104,36 +132,90 @@ defmodule Boleto do
   end
 
   ## moises
-  def nosso_numero do
-   # caso 1 sem o dv opcao 1
-   # caso 2 nosso numero livre do cliente
-  end
+  def nosso_numero(campo) do
+    total_digitos = String.length(campo)
 
-  ### raphael
-  def num_convenio do
-    # numero aleatorio
+    fatores = Stream.cycle([9, 8, 7, 6, 5, 4, 3, 2])
+
+    fatores =
+      Enum.take(fatores, total_digitos)
+      |> Enum.reverse()
+
+    # tratar string
+    soma_campo =
+      String.split(campo, "", trim: true)
+      |> Enum.map(&String.to_integer/1)
+      |> Enum.zip(fatores)
+      ## refatorar
+      |> Enum.map(fn {x, y} -> value = x * y end)
+      |> Enum.sum()
+
+    resto = rem(soma_campo, 11)
+
+    dv =
+      cond do
+        resto < 10 ->
+          resto
+
+        resto == 10 ->
+          "X"
+      end
   end
 
   ### moises
   def complemento_do_num do
   end
 
-  ### raphael
-  def num_agencia do
-    #numero aleatorio
-  end
+  # ### aleatorio
+  # def num_convenio do
+  #   # caso 1 CCCCC
+  #   # caso 2 CCCCCc
+  #   # caso 3 CCCCCCC
+  #   # caso 4 livre do cliente
+  # end
 
-  ### moises
-  def conta_corrente do
-  end
+  # ### aleatorio
+  # def num_agencia do
+  # end
 
-  ### moises
-  # ou modalidade de cobrança
-  def tipo_carteria do
+  # ### aleatorio
+  # def conta_corrente do
+  # end
 
-  end
+  # ### aleatorio
+  # def tipo_carteria do
+  # end
 
   # def linha(digitavel) do
   #   Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
   # end
+
+  def codificador do
+    # Digite o
+    # • Código do banco;
+    # • Moeda;
+    # • Data de vencimento (dia/mes/ano, na forma DD/MM/AAAA);
+    # • valor;
+    # • tipo de convenio (04, 05, o7 posições ou livre com 17 posições). Ver https://www.bb.com.br/docs/ pub/emp/empl/dwn/Doc5175Bloqueto.pdf;
+    # • Dados específicos para cada tipo de convênio
+    #  retorna saida codigo de barras e linha digitavel
+    code = Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
+  end
+
+  def codigo_barras(code) do
+    Barlix.Code39.encode!(code) |> Barlix.PNG.print(file: "./barcode.png")
+  end
+
+  def decodificador do
+    # Digite linha digitavel com os 44 elementos
+    # Retorna
+    # • Linha digitável;
+    # • Código do banco;
+    # • Moeda;
+    # • Data de vencimento (dia/mes/ano, na forma DD/MM/AAAA);
+    # • valor;
+    # • tipo de convenio (04, 05, o7 posições ou livre com 17 posições). Ver https://www.bb.com.br/docs/
+    # pub/emp/empl/dwn/Doc5175Bloqueto.pdf;
+    # • Dados específicos para cada tipo de convênio
+  end
 end

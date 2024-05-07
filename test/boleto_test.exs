@@ -6,19 +6,29 @@ defmodule BoletoTest do
     assert Boleto.codigo_moeda("real") == 9
   end
 
-  test "digito verificador igual a 5" do
-    assert Boleto.dv("001905009") == 5
+  test "código de barras para fator de vencimento" do
+    assert Date.to_iso8601(Boleto.fator_venc(1000)) == "2000-07-03"
   end
 
-  # test "digito verificador igual a 9" do
-  #   assert Boleto.dv("4014481606") == 9
-  # end
+  test "data para fator de vencimento" do
+    IO.puts(Boleto.fator_venc(03, 07, 2000))
+    assert Boleto.fator_venc(03, 07, 2000) == 1000
+  end
 
-  # test "digito verificador igual a 4" do
-  #   assert Boleto.dv("0680935031") == 4
-  # end
+  test "digito verificador igual a 5" do
+    assert Boleto.dv_line("001905009") == 5
+  end
 
-  ## tamanho da linha 44 itens
-  ## tamanho da linha 47 itens
-  ## valor do dv calculado corretemente
+  test "digito verificador igual a 9" do
+    assert Boleto.dv_line("4014481606") == 9
+  end
+
+  test "digito verificador igual a 4" do
+    assert Boleto.dv_line("0680935031") == 4
+  end
+
+  # código do Beneficiário e prefixo da agência,
+  test "nosso numero 05009401448-1" do
+    assert Boleto.nosso_numero("05009401448") == 1
+  end
 end
