@@ -32,11 +32,12 @@ defmodule Boleto do
   def dv_line(campo) do
     total_digitos = String.length(campo)
 
-    cycle = if total_digitos == 10 do
-              [1, 2]
-            else
-              [2, 1]
-            end
+    cycle =
+      if total_digitos == 10 do
+        [1, 2]
+      else
+        [2, 1]
+      end
 
     # IO.inspect(cycle)
 
@@ -61,7 +62,7 @@ defmodule Boleto do
       |> Enum.sum()
 
     resto = rem(soma_campo, 10)
-    proxima_dezena = (soma_campo + 10) - resto
+    proxima_dezena = soma_campo + 10 - resto
 
     dv = rem(proxima_dezena - resto, 10)
   end
@@ -94,9 +95,34 @@ defmodule Boleto do
   end
 
   ## moises
-  def nosso_numero do
-    # caso 1 sem o dv opcao 1
-    # caso 2 nosso numero livre do cliente
+  def nosso_numero(campo) do
+    total_digitos = String.length(campo)
+
+    fatores = Stream.cycle([9, 8, 7, 6, 5, 4, 3, 2])
+
+    fatores =
+      Enum.take(fatores, total_digitos)
+      |> Enum.reverse()
+
+    # tratar string
+    soma_campo =
+      String.split(campo, "", trim: true)
+      |> Enum.map(&String.to_integer/1)
+      |> Enum.zip(fatores)
+      ## refatorar
+      |> Enum.map(fn {x, y} -> value = x * y end)
+      |> Enum.sum()
+
+    resto = rem(soma_campo, 11)
+
+    dv =
+      cond do
+        resto < 10 ->
+          resto
+
+        resto == 10 ->
+          "X"
+      end
   end
 
   ### raphael

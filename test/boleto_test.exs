@@ -10,7 +10,6 @@ defmodule BoletoTest do
     assert Date.to_iso8601(Boleto.fator_venc(1000)) == "2000-07-03"
   end
 
-
   test "data para fator de vencimento" do
     IO.puts(Boleto.fator_venc(03, 07, 2000))
     assert Boleto.fator_venc(03, 07, 2000) == 1000
@@ -26,5 +25,10 @@ defmodule BoletoTest do
 
   test "digito verificador igual a 4" do
     assert Boleto.dv_line("0680935031") == 4
+  end
+
+  # código do Beneficiário e prefixo da agência,
+  test "nosso numero 05009401448-1" do
+    assert Boleto.nosso_numero("05009401448") == 1
   end
 end
