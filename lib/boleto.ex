@@ -8,6 +8,11 @@ defmodule Boleto do
 
 
   """
+  def main do
+    IO.puts(">>>>>>>>> teste")
+    #  |>
+  end
+
   def codigo_banco do
     001
   end
@@ -125,32 +130,61 @@ defmodule Boleto do
       end
   end
 
-  ### raphael
-  def num_convenio do
-    # caso 1 CCCCC
-    # caso 2 CCCCCc
-    # caso 3 CCCCCCC
-    # caso 4 livre do cliente
-  end
 
   ### moises
   def complemento_do_num do
   end
 
-  ### raphael
-  def num_agencia do
-  end
+  # ### aleatorio
+  # def num_convenio do
+  #   # caso 1 CCCCC
+  #   # caso 2 CCCCCc
+  #   # caso 3 CCCCCCC
+  #   # caso 4 livre do cliente
+  # end
 
-  ### moises
-  def conta_corrente do
-  end
+  # ### aleatorio
+  # def num_agencia do
+  # end
 
-  ### moises
-  # ou modalidade de cobrança
-  def tipo_carteria do
-  end
+  # ### aleatorio
+  # def conta_corrente do
+  # end
+
+  # ### aleatorio
+  # def tipo_carteria do
+  # end
 
   # def linha(digitavel) do
   #   Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
   # end
+
+  def codificador do
+    # Digite o
+    # • Código do banco;
+    # • Moeda;
+    # • Data de vencimento (dia/mes/ano, na forma DD/MM/AAAA);
+    # • valor;
+    # • tipo de convenio (04, 05, o7 posições ou livre com 17 posições). Ver https://www.bb.com.br/docs/ pub/emp/empl/dwn/Doc5175Bloqueto.pdf;
+    # • Dados específicos para cada tipo de convênio
+    #  retorna saida codigo de barras e linha digitavel
+    code = Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
+  end
+
+  def codigo_barras(code) do
+    Barlix.Code39.encode!(code) |> Barlix.PNG.print(file: "./barcode.png")
+  end
+
+  def decodificador do
+    # Digite linha digitavel com os 44 elementos
+    # Retorna
+    # • Linha digitável;
+    # • Código do banco;
+    # • Moeda;
+    # • Data de vencimento (dia/mes/ano, na forma DD/MM/AAAA);
+    # • valor;
+    # • tipo de convenio (04, 05, o7 posições ou livre com 17 posições). Ver https://www.bb.com.br/docs/
+    # pub/emp/empl/dwn/Doc5175Bloqueto.pdf;
+    # • Dados específicos para cada tipo de convênio
+  end
 end
