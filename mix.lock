@@ -1,0 +1,4 @@
+%{
+  "barlix": {:hex, :barlix, "0.6.3", "eca559b67772ff073f03feed60c6aab12e14f460d9dfe455377f684e5a218434", [:mix], [{:png, "~> 0.2", [hex: :png, repo: "hexpm", optional: false]}], "hexpm", "e2867d6d257b01da50914f44c5f2827bb7ffc8dfb69ffac91c3ac20ed2f9ae6b"},
+  "png": {:hex, :png, "0.2.1", "b25c17c8dcdc40096d46ae2d7c2777c63fede48fa8c8312cc708c88554049d3b", [:rebar3], [], "hexpm", "279345e07108c604871a21f1c91f716810ab559af2b20d6f302e0a98265ef72e"},
+}

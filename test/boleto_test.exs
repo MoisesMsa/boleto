@@ -27,8 +27,12 @@ defmodule BoletoTest do
     assert Boleto.dv_line("0680935031") == 4
   end
 
-  # código do Beneficiário e prefixo da agência,
+  # código do Beneficiário e prefixo da agência
   test "nosso numero 05009401448-1" do
-    assert Boleto.nosso_numero("05009401448") == 1
+    assert Boleto.nosso_numero_dv("05009401448") == "1"
+  end
+
+  test "digito verifcador do boleto igual a 3" do
+    assert Boleto.codigo_barras_dv("0019373700000001000500940144816060680935031") == 3
   end
 end
