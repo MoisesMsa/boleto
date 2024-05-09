@@ -76,14 +76,13 @@ defmodule Boleto do
   end
 
   def fator_venc(fator) do
+    fator_int = String.to_integer(fator)
     {:ok, data_base} = Date.new(1997, 10, 7)
-    data_nova = Date.add(data_base, fator)
+    data_nova = Date.add(data_base, fator_int)
 
-    IO.inspect(Date.to_iso8601(data_nova))
+    Date.to_iso8601(data_nova)
 
     #{year, month, day} = {data_nova.year, data_nova.month, data_nova.day}
-
-
     #ao receber o fator de vencimento essa funcao adiciona ele a data base para retornar o dia, mes e ano da data de vencimento
 
   end
@@ -118,7 +117,7 @@ defmodule Boleto do
     #transforma o valor em string para usar a funcao pad_leading para preencher o valor com zeros
     valorFinal = String.pad_leading(valorFormatado, 10, "0")
 
-    IO.inspect(valorFinal)
+    valorFinal
 
   end
 
@@ -126,7 +125,7 @@ defmodule Boleto do
 
     preco = String.to_integer(valor)
 
-    IO.inspect(Float.to_string(preco/100))
+    Float.to_string(preco/100)
 
     #se o valor tiver dez digitos e for do tipo binary ele transforma em uma string e divide por 100 para adicionar os centavos ao valor do codigo de barras
   end
@@ -190,7 +189,13 @@ defmodule Boleto do
   #   Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
   # end
 
-  def codificador do
+  def formata_data(data) do
+    [dia, mes, ano] = String.split(data, "/")
+    {String.to_integer(dia), String.to_integer(mes), String.to_integer(ano)}
+    fator_venc(dia, mes, ano)
+  end
+
+  def codificador(moeda, data, valor) do
     # Digite o
     # • Código do banco;
     # • Moeda;
@@ -199,6 +204,14 @@ defmodule Boleto do
     # • tipo de convenio (04, 05, o7 posições ou livre com 17 posições). Ver https://www.bb.com.br/docs/ pub/emp/empl/dwn/Doc5175Bloqueto.pdf;
     # • Dados específicos para cada tipo de convênio
     #  retorna saida codigo de barras e linha digitavel
+
+    [dia, mes, ano] = formata_data(data)
+    codigo_banco = codigo_banco()
+    codigo_moeda = codigo_moeda(moeda)
+    fator_venc = fator_venc(dia, mes, ano)
+    valor = valor_codificador(valor)
+
+    #entre codigo moeda e fator vencimento tem que adicionar dv do codigo de barras e após valores são apenas numeros aleatorios.
     code = Enum.join([codigo_banco, codigo_moeda, fator_venc, valor, nosso_numero, num_convenio, complemento_do_num, num_agencia, conta_corrente, tipo_carteria])
   end
 
@@ -206,7 +219,7 @@ defmodule Boleto do
     Barlix.Code39.encode!(code) |> Barlix.PNG.print(file: "./barcode.png")
   end
 
-  def decodificador do
+  def decodificador(codigo_barra) do
     # Digite linha digitavel com os 44 elementos
     # Retorna
     # • Linha digitável;
@@ -217,5 +230,30 @@ defmodule Boleto do
     # • tipo de convenio (04, 05, o7 posições ou livre com 17 posições). Ver https://www.bb.com.br/docs/
     # pub/emp/empl/dwn/Doc5175Bloqueto.pdf;
     # • Dados específicos para cada tipo de convênio
+
+
+    codigo_banco = String.slice(codigo_barra,0..2)
+    IO.gets(codigo_banco)
+    moeda = String.at(codigo_barra, 3)
+    if moeda == "9" do
+      IO.gets("Real")
+    end
+    if moeda == "0" do
+      IO.gets("Outro")
+    end
+    data_vencimento = fator_venc(String.slice(codigo_barra,5..8))
+    IO.gets(data_vencimento)
+    valor = valor_decodificador(String.slice(codigo_barra,9..18))
+    IO.gets(valor)
+    numero_convenio = String.slice(codigo_barra,19..22)
+    IO.gets(numero_convenio)
+    complemento = String.slice(codigo_barra,23..29)
+    IO.gets(complemento)
+    agencia = String.slice(codigo_barra,30..33)
+    IO.gets(agencia)
+    conta = String.slice(codigo_barra,34..41)
+    IO.gets(conta)
+    carteira = String.slice(codigo_barra,42..43)
+    IO.gets(carteira)
   end
 end
